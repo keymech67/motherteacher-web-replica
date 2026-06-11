@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as StudentAreaRouteImport } from './routes/student-area'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as FacilitiesRouteImport } from './routes/facilities'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CbseRouteImport } from './routes/cbse'
@@ -19,6 +20,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const StudentAreaRoute = StudentAreaRouteImport.update({
   id: '/student-area',
   path: '/student-area',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FacilitiesRoute = FacilitiesRouteImport.update({
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/cbse': typeof CbseRoute
   '/contact': typeof ContactRoute
   '/facilities': typeof FacilitiesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/student-area': typeof StudentAreaRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/cbse': typeof CbseRoute
   '/contact': typeof ContactRoute
   '/facilities': typeof FacilitiesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/student-area': typeof StudentAreaRoute
 }
 export interface FileRoutesById {
@@ -70,6 +78,7 @@ export interface FileRoutesById {
   '/cbse': typeof CbseRoute
   '/contact': typeof ContactRoute
   '/facilities': typeof FacilitiesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/student-area': typeof StudentAreaRoute
 }
 export interface FileRouteTypes {
@@ -80,9 +89,17 @@ export interface FileRouteTypes {
     | '/cbse'
     | '/contact'
     | '/facilities'
+    | '/sitemap.xml'
     | '/student-area'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/cbse' | '/contact' | '/facilities' | '/student-area'
+  to:
+    | '/'
+    | '/about'
+    | '/cbse'
+    | '/contact'
+    | '/facilities'
+    | '/sitemap.xml'
+    | '/student-area'
   id:
     | '__root__'
     | '/'
@@ -90,6 +107,7 @@ export interface FileRouteTypes {
     | '/cbse'
     | '/contact'
     | '/facilities'
+    | '/sitemap.xml'
     | '/student-area'
   fileRoutesById: FileRoutesById
 }
@@ -99,6 +117,7 @@ export interface RootRouteChildren {
   CbseRoute: typeof CbseRoute
   ContactRoute: typeof ContactRoute
   FacilitiesRoute: typeof FacilitiesRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StudentAreaRoute: typeof StudentAreaRoute
 }
 
@@ -109,6 +128,13 @@ declare module '@tanstack/react-router' {
       path: '/student-area'
       fullPath: '/student-area'
       preLoaderRoute: typeof StudentAreaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/facilities': {
@@ -155,8 +181,19 @@ const rootRouteChildren: RootRouteChildren = {
   CbseRoute: CbseRoute,
   ContactRoute: ContactRoute,
   FacilitiesRoute: FacilitiesRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   StudentAreaRoute: StudentAreaRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
